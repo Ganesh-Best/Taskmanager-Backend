@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 const {users,todos} = require('../db/db');
 const Router  =   express.Router();
 
@@ -33,16 +34,16 @@ Router.post('/signup',async (req,res)=>{
 
     const { name,email,mobile,password} = req.body;
 
-    if(name && email && mobile && password){
+    if(name && validator.isEmail(email) && validator.isNumeric(mobile) && password){
            
             let isFound   =  await users.findOne({email});       
             
             if(isFound != null){
                res.json({message:"User already exists :"})
             }else{
-                 let salt         =   await bcrypt.genSalt(10) 
-             let hashPass  =   await bcrypt.hash(password,salt)
-              let isCreated   =   await users.create({
+             let salt       =   await bcrypt.genSalt(10) 
+             let hashPass   =   await bcrypt.hash(password,salt)
+             let isCreated  =   await users.create({
                         name,email,mobile,password:hashPass
                       })
               
