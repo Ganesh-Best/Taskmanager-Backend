@@ -1,15 +1,15 @@
 const jwt  = require('jsonwebtoken');
 require('dotenv').config({path:'../.env'})
 
-export const generateJwt = (payload)=>{
+const generateJwt = (payload)=>{
 
-     let token =  jwt.sign({payload},process.env.SECRET_KEY,{ expiresIn:'1h' })
+     let token =  jwt.sign({payload},process.env.SECRET_KEY,{ expiresIn:'1d' })
      
     return  `Bearer ${token}`;
 
   }
 
-export const decodeJwt = (cipher)=>{
+const decodeJwt = (cipher)=>{
   const token   =  cipher.split(' ')[1]
   try {
     
@@ -21,15 +21,27 @@ export const decodeJwt = (cipher)=>{
   }
 }
 
-export const authenticate = (req,res,next)=>{
+ const authenticate = (req,res,next)=>{
  
   const { token } = req.headers;
 
-  const payload =  decodeJwt(token);
-
+  const {payload} =  decodeJwt(token);
   if(payload){
+      
+    // check if req user is not present then create empty user.
+
+       if(!req.user)
+         req.user = {}
+
+    req.user.id = payload;
     next(); 
+    
   }else
     res.status(403)
 
+}
+
+
+module.exports = {
+   generateJwt ,decodeJwt,authenticate
 }

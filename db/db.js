@@ -9,6 +9,7 @@ const userSchema  =  new moongoose.Schema({
 })
 
 const todoSchema = new moongoose.Schema({
+    userId:{type:String,required:true},
     title:{type:String,required:true},
     description:{type: String ,required:true},
     completed:{type:Boolean,required:true}

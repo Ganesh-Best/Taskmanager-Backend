@@ -9,7 +9,7 @@ app.use(express.json())
 
 app.use('/auth',authRoute);
 
-app.use('/todo',todoRoute)
+app.use('/todo',todoRoute);
 
 app.get('/',(req,res)=>{
     res.json({status:"true",server:"Server is Running :"});

@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const {users,todos} = require('../db/db');
 const Router  =   express.Router();
+const {generateJwt,decodeJwt,authenticate} = require('../Controller/controller')
 
 Router.post('/login' , async(req,res)=>{
 
@@ -10,17 +11,14 @@ const {email,password} = req.body ;
 
     if(email && password){
            
-        
-
       const isUser  =  await users.findOne({email})
   
-       console.log('isUser pas',isUser.password)
         
       const  isMatch  =  await bcrypt.compare(password,isUser.password);
        
       if(isMatch){
-           
-         res.json({message:"login successful :"})
+         let token  =  generateJwt(isUser._id)
+         res.json({message:"login successful :",token})
  
       }else
         res.status(404).json('username and password incorrect ')
@@ -52,9 +50,10 @@ Router.post('/signup',async (req,res)=>{
             }
 
     }else
-     res.status(411).json({message:"Length required :"})
+     res.status(411).json({message:"Invalid inputs :"})
 
 })
+
 
 
 module.exports = Router;
