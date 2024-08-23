@@ -4,8 +4,9 @@ const userSchema  =  new moongoose.Schema({
   name:{type:String,required:true},
   email:{type:String,required:true},
   mobile:{type:Number,required:true},
+  isVerify:{type:Boolean,required:true},
   password:{type:String,required:true, maxlength: 60},
-  
+
 })
 
 const todoSchema = new moongoose.Schema({

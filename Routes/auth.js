@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const {users,todos} = require('../db/db');
 const Router  =   express.Router();
-const {generateJwt,decodeJwt,authenticate} = require('../Controller/controller')
+const {generateJwt,decodeJwt,authenticate,verifyMail} = require('../Controller/controller');
+const { default: mongoose } = require('mongoose');
 
 Router.post('/login' , async(req,res)=>{
 
@@ -42,9 +43,9 @@ Router.post('/signup',async (req,res)=>{
              let salt       =   await bcrypt.genSalt(10) 
              let hashPass   =   await bcrypt.hash(password,salt)
              let isCreated  =   await users.create({
-                        name,email,mobile,password:hashPass
+                        name,email,mobile,isVerify:false,password:hashPass
                       })
-              
+              verifyMail(name,email,isCreated._id)    
                 res.status(201).json({message:"Signup has been done successfully :"})                      
 
             }
@@ -54,6 +55,20 @@ Router.post('/signup',async (req,res)=>{
 
 })
 
+Router.get('/verify',async(req,res)=>{
+ 
+  const userId = req.query.id 
+   
+  if(mongoose.Types.ObjectId.isValid(userId)){
+
+         const userVerify  =   await users.findByIdAndUpdate({_id:userId},{isVerify:true},{new:true})
+       if(userVerify)
+         res.send('<h1>congratulations your email is verified </h1>')
+
+  }else
+  res.status(411).json({message:"Invalid user id "})
+
+})
 
 
 module.exports = Router;

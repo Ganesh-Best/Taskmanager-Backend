@@ -1,4 +1,6 @@
 const jwt  = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
 require('dotenv').config({path:'../.env'})
 
 const generateJwt = (payload)=>{
@@ -41,7 +43,39 @@ const decodeJwt = (cipher)=>{
 
 }
 
+//It will sent mail to 
+const verifyMail = (name,email,userId)=>{
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure:false,
+    requireTLS:true,
+    auth:{
+      user:process.env.SENDER,
+      pass:process.env.PASS
+    }
+   })
+
+  const mailOptions = {
+    from: process.env.SENDER,
+    to: email,
+    subject: `Verify your email ${name}`,
+    html:`<p>Hi ${name} , <br/> Please click  <a href=${process.env.BACKEND}/auth/verify?id=${userId}> Here </a> to verify your email address  <br/> Best Regards , <br/> todos team  </p>`
+  } 
+
+  transporter.sendMail(mailOptions,(error,response)=>{
+    
+    if(error)
+      return console.log('unable to send mail' ,error)
+
+    console.log('mails has been sent',response)
+
+  })
+
+}
+
 
 module.exports = {
-   generateJwt ,decodeJwt,authenticate
+   generateJwt ,decodeJwt,authenticate,verifyMail
 }
