@@ -1,26 +1,31 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const validator = require('validator');
-const {users,todos} = require('../db/db');
+import express  from 'express'
+import {Request,Response} from 'express'
+import bcrypt from 'bcrypt'
+import validator from 'validator'
+import {users,todos} from'../db/db'
 const Router  =   express.Router();
-const {generateJwt,decodeJwt,authenticate,verifyMail} = require('../Controller/controller');
-const { default: mongoose } = require('mongoose');
+import {generateJwt,decodeJwt,authenticate,verifyMail} from '../Controller/controller';
+import  mongoose from 'mongoose';
 
-Router.post('/login' , async(req,res)=>{
+Router.post('/login' , async(req : Request,res : Response)=>{
 
 const {email,password} = req.body ;
 
     if(email && password){
            
-      const isUser  =  await users.findOne({email})
-  
+        const isUser  =  await users.findOne({email})
+      
+            if(isUser != null){
         
-      const  isMatch  =  await bcrypt.compare(password,isUser.password);
+              const  isMatch  =  await bcrypt.compare(password,isUser.password);
        
-      if(isMatch){
-         let token  =  generateJwt(isUser._id)
-         res.json({message:"login successful :",token})
- 
+             if(isMatch){
+               let token  =  generateJwt(isUser._id)
+               res.json({message:"login successful :",token})
+      }else{
+        res.status(404).json({message:"User not found :"})
+         
+      }
       }else
         res.status(404).json('username and password incorrect ')
        
@@ -29,7 +34,7 @@ const {email,password} = req.body ;
     res.status(411).json({message:"Username or Password required :"})
 })
 
-Router.post('/signup',async (req,res)=>{
+Router.post('/signup',async (req : Request,res: Response)=>{
 
     const { name,email,mobile,password} = req.body;
 
@@ -55,20 +60,22 @@ Router.post('/signup',async (req,res)=>{
 
 })
 
-Router.get('/verify',async(req,res)=>{
+Router.get('/verify',async(req : Request,res: Response)=>{
  
-  const userId = req.query.id 
-   
-  if(mongoose.Types.ObjectId.isValid(userId)){
+  const userId: string|undefined = req.query.id as string | undefined ;
+  
+  if(userId){
+  
+      if(mongoose.Types.ObjectId.isValid(userId)){
 
          const userVerify  =   await users.findByIdAndUpdate({_id:userId},{isVerify:true},{new:true})
        if(userVerify)
          res.send('<h1>congratulations your email is verified </h1>')
 
-  }else
-  res.status(411).json({message:"Invalid user id "})
-
+      }else
+      res.status(411).json({message:"Invalid user id "})
+    }
 })
 
 
-module.exports = Router;
+export default Router;

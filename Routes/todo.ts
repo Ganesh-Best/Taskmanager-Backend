@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express'
+import { Request,Response , NextFunction } from 'express';
 const Router   =   express.Router();
-const {authenticate} = require('../Controller/controller');
-const {todos} = require('../db/db');
-const mongoose = require('mongoose');
+import {authenticate} from '../Controller/controller';
+import {todos} from '../db/db';
+import mongoose  from 'mongoose'
 
 
-Router.post('/todo', authenticate ,async (req,res)=>{
+Router.post('/todo', authenticate ,async (req: Request,res : Response)=>{
     const {title,description} = req.body;
     
     if(title && description){
@@ -19,13 +20,13 @@ Router.post('/todo', authenticate ,async (req,res)=>{
 
 })
 
-Router.get('/todo',authenticate,async(req,res)=>{
+Router.get('/todo',authenticate,async(req :Request,res : Response)=>{
      const TODOS  = await todos.find({userId:req.user.id});
      console.log(TODOS)
      res.json({todos:TODOS});
 })
 
-Router.patch('/todo/:id/done',authenticate,async(req,res)=>{
+Router.patch('/todo/:id/done',authenticate,async(req : Request,res: Response)=>{
       
     console.log('inside Patch Route :');
      const {id} = req.params;
@@ -45,4 +46,4 @@ Router.patch('/todo/:id/done',authenticate,async(req,res)=>{
 
 
 
-module.exports =  Router;
+export default Router;

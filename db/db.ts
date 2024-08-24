@@ -1,6 +1,6 @@
-const moongoose = require('mongoose');
+import moongoose, { Error } from 'mongoose';
 
-const userSchema  =  new moongoose.Schema({
+ const userSchema  =  new moongoose.Schema({
   name:{type:String,required:true},
   email:{type:String,required:true},
   mobile:{type:Number,required:true},
@@ -17,10 +17,11 @@ const todoSchema = new moongoose.Schema({
 })
 
 
-const todos =  moongoose.model('todo',todoSchema);
-const users =   moongoose.model('user',userSchema);
-moongoose.connect(process.env.MONGODB_URL);
+export const todos =  moongoose.model('todo',todoSchema);
+export const  users =   moongoose.model('user',userSchema);
 
-module.exports = {
-    todos,users
-}
+
+if(process.env.MONGODB_URL)
+ moongoose.connect(process.env.MONGODB_URL);
+else
+ throw new Error("MONGODB_URL is not defined ");
