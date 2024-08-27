@@ -13,8 +13,17 @@ interface Payload {
    error?:boolean;
 }
 
-interface User extends Request {
-    user: Payload
+export interface newRequest extends Request {
+    user?: Payload
+}
+
+export interface User extends Document {
+  _id: ObjectId,
+  name:string;
+  email:string;
+  mobile:number;
+  isVerify:boolean;
+  password:string;
 }
 
 interface Mail {
@@ -51,7 +60,7 @@ export const decodeJwt =  (cipher: String): Payload  =>{
 
 }
 
-export const authenticate = (req: User,res: Response,next: NextFunction)=>{
+export const authenticate = (req: newRequest,res: Response,next: NextFunction):void =>{
  
   const token : string = req.headers.token as string 
 

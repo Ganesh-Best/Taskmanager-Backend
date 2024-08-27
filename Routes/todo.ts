@@ -1,17 +1,17 @@
 import express from 'express'
 import { Request,Response , NextFunction } from 'express';
 const Router   =   express.Router();
-import {authenticate} from '../Controller/controller';
-import {todos} from '../db/db';
+import {authenticate,newRequest} from '../Controller/controller';
+import {Todo, todos} from '../db/db';
 import mongoose  from 'mongoose'
 
 
-Router.post('/todo', authenticate ,async (req: Request,res : Response)=>{
-    const {title,description} = req.body;
+Router.post('/todo', authenticate ,async (req: newRequest,res : Response)=>{
+    const {title,description}:{title:string;description:string} = req.body;
     
-    if(title && description){
-       console.log('userID',req.user.id);        
-      const isCreated = await  todos.create({userId:req.user.id,title,description,completed:false})
+    if(title && description && req?.user){
+
+      const isCreated: Todo = await  todos.create({userId:req.user.id,title,description,completed:false})
       
        res.status(201).json({message:"Todo created successfully "})
 
@@ -20,21 +20,24 @@ Router.post('/todo', authenticate ,async (req: Request,res : Response)=>{
 
 })
 
-Router.get('/todo',authenticate,async(req :Request,res : Response)=>{
-     const TODOS  = await todos.find({userId:req.user.id});
+Router.get('/todo',authenticate,async(req :newRequest,res : Response)=>{
+
+     if(req?.user){
+     const TODOS: Todo[] = await todos.find({userId:req.user.id}); // very important as it will return array of object that why we use []
      console.log(TODOS)
      res.json({todos:TODOS});
+     }
 })
 
-Router.patch('/todo/:id/done',authenticate,async(req : Request,res: Response)=>{
+Router.patch('/todo/:id/done',authenticate,async(req : newRequest,res: Response)=>{
       
     console.log('inside Patch Route :');
      const {id} = req.params;
       console.log('Object ID',id)
-     if(mongoose.Types.ObjectId.isValid(id)){
+     if(mongoose.Types.ObjectId.isValid(id) && req?.user){
                 
-        const updatedTodo  =  await todos.findByIdAndUpdate({_id:id,userId:req.user.id},{completed:true},{new:true})
-          
+        const updatedTodo: Todo|null  =  await todos.findByIdAndUpdate({_id:id,userId:req.user.id},{completed:true},{new:true})
+         if(updatedTodo != null) 
          res.status(201).json({message:"Todo updated",updatedTodo});
 
      }else

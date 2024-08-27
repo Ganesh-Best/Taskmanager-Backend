@@ -1,6 +1,14 @@
-import moongoose, { Error } from 'mongoose';
+import moongoose, { Error ,Document,Model,Schema, ObjectId } from 'mongoose';
+import { User } from '../Controller/controller';
+export interface Todo extends Document {
+   _id:ObjectId;
+   userId:string;
+   title: string;
+   description:string;
+   completed:boolean
+}
 
- const userSchema  =  new moongoose.Schema({
+ const userSchema: Schema<User>  =  new moongoose.Schema({
   name:{type:String,required:true},
   email:{type:String,required:true},
   mobile:{type:Number,required:true},
@@ -9,7 +17,7 @@ import moongoose, { Error } from 'mongoose';
 
 })
 
-const todoSchema = new moongoose.Schema({
+const todoSchema: Schema<Todo> = new moongoose.Schema({
     userId:{type:String,required:true},
     title:{type:String,required:true},
     description:{type: String ,required:true},
