@@ -2,7 +2,7 @@ import express from 'express'
 import { Request,Response , NextFunction } from 'express';
 const Router   =   express.Router();
 import {authenticate,newRequest} from '../Controller/controller';
-import {Todo, todos} from '../db/db';
+import {Todo, todos ,deleteResult} from '../db/db';
 import mongoose  from 'mongoose'
 
 
@@ -32,7 +32,8 @@ Router.get('/todo',authenticate,async(req :newRequest,res : Response)=>{
 Router.patch('/todo/:id/done',authenticate,async(req : newRequest,res: Response)=>{
       
     console.log('inside Patch Route :');
-     const {id} = req.params;
+     
+    const {id} = req.params;
       console.log('Object ID',id)
      if(mongoose.Types.ObjectId.isValid(id) && req?.user){
                 
@@ -45,6 +46,25 @@ Router.patch('/todo/:id/done',authenticate,async(req : newRequest,res: Response)
      
 })
 
+Router.delete('/todos',authenticate, async(req: newRequest,res:Response)=>{
+       const userId : string|undefined =   req.user?.id   ;  
+
+        if(userId){
+             const  deletedTodos : deleteResult   =  await  todos.deleteMany({userId})
+
+             console.log('deleted Todos :',deletedTodos);
+
+             if(deletedTodos ){
+                setTimeout(()=>{
+                      
+                res.status(201).json({message:'success',deleteCount:deletedTodos.deletedCount})
+                },1000)
+             }
+        }else{
+           res.status(404).json({message:"fail",})
+
+        }
+})
 
 
 

@@ -7,7 +7,7 @@ const Router  =   express.Router();
 import {generateJwt,decodeJwt,authenticate,verifyMail,User} from '../Controller/controller';
 import  mongoose from 'mongoose';
 
-Router.post('/login' , async(req : Request,res : Response)=>{
+Router.post('/login' , async(req ,res : Response)=>{
 
 const {email,password}: {email:string;password:string} = req.body ;
 

@@ -8,6 +8,11 @@ export interface Todo extends Document {
    completed:boolean
 }
 
+export type deleteResult = {
+  acknowledged: boolean;
+  deletedCount: number;
+}
+
  const userSchema: Schema<User>  =  new moongoose.Schema({
   name:{type:String,required:true},
   email:{type:String,required:true},

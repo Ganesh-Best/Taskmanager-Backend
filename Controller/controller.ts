@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import { Request,Response,NextFunction } from 'express'
 import { ObjectId } from 'mongoose'
+import {z} from 'zod';
 
 dotenv.config({path:'../.env'})
 
@@ -55,17 +56,23 @@ export const decodeJwt =  (cipher: String): Payload  =>{
     return decoded
       
   }catch(e){
+    console.log('Catch fucntion get call :')
     return {error:true}
+
   }
 
 }
 
 export const authenticate = (req: newRequest,res: Response,next: NextFunction):void =>{
  
-  const token : string = req.headers.token as string 
-
-  const payload : Payload =  decodeJwt(token);
+  const token : string|undefined = req.headers.token as string ;
   
+  if(!token)
+  res.status(401).json({message:"unauthorized Request :"});
+  else{
+  const payload : Payload =  decodeJwt(token);
+    console.log('payload after decodeJwt:',payload)
+
   if(payload?.id ){
        
         let id: string  =   payload.id 
@@ -78,8 +85,8 @@ export const authenticate = (req: newRequest,res: Response,next: NextFunction):v
     next(); 
     
   }else
-    res.status(403)
-
+    res.status(403).json({message:"forbidden"})
+  }
 }
 
 //It will sent mail to 
