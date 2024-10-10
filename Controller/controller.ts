@@ -56,7 +56,7 @@ export const decodeJwt =  (cipher: String): Payload  =>{
     return decoded
       
   }catch(e){
-    console.log('Catch fucntion get call :')
+    console.log('Catch fucntion get call :',e)
     return {error:true}
 
   }

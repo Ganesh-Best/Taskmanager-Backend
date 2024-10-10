@@ -55,10 +55,9 @@ Router.delete('/todos',authenticate, async(req: newRequest,res:Response)=>{
              console.log('deleted Todos :',deletedTodos);
 
              if(deletedTodos ){
-                setTimeout(()=>{
                       
                 res.status(201).json({message:'success',deleteCount:deletedTodos.deletedCount})
-                },1000)
+               
              }
         }else{
            res.status(404).json({message:"fail",})

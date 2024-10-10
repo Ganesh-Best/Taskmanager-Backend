@@ -16,19 +16,17 @@ const {email,password}: {email:string;password:string} = req.body ;
         const isUser : User|null  =  await users.findOne({email})
       
             if(isUser != null){
-        
+               
               const  isMatch : boolean  =  await bcrypt.compare(password,isUser.password);
        
-             if(isMatch){
-               let token: string  =  generateJwt(isUser._id)
-               res.json({message:"login successful :",token})
-      }else{
-        res.status(404).json({message:"User not found :"})
-         
-      }
-      }else
-        res.status(404).json('username and password incorrect ')
-       
+               if(isMatch){
+                 let token: string  =  generateJwt(isUser._id)
+                 res.json({message:"login successful :",token ,name:isUser.name})
+               }else
+                 res.status(404).json('username and password incorrect ');
+            }else
+               res.status(401).json({message:"User not found :"})
+          
       
     }else
     res.status(411).json({message:"Username or Password required :"})
@@ -43,7 +41,7 @@ Router.post('/signup',async (req : Request,res: Response)=>{
             let isFound : User | null   =  await users.findOne({email});       
             
             if(isFound != null){
-               res.json({message:"User already exists :"})
+               res.status(302).json({message:"User already exists :"})
             }else{
              let salt : string     =   await bcrypt.genSalt(10) 
              let hashPass : string  =   await bcrypt.hash(password,salt)
